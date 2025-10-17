@@ -1,1 +1,18 @@
-import React from 'react';\nimport { cn } from '@/lib/utils';\n\nconst FloatingCredit: React.FC = () => {\n  return (\n    <div className={cn(\n      'fixed bottom-16 right-4 z-40',\n      'bg-background/90 backdrop-blur-sm border border-border rounded-lg',\n      'px-3 py-2 shadow-lg',\n      'text-sm text-muted-foreground',\n      'transition-all duration-200 hover:bg-background/95'\n    )}>\n      Built by PiPilot\n    </div>\n  );\n};\n\nexport default FloatingCredit;
+import React from 'react';
+import { cn } from '@/lib/utils';
+
+const FloatingCredit: React.FC = () => {
+  return (
+    <div className={cn(
+      'fixed bottom-16 right-4 z-40',
+      'bg-background/90 backdrop-blur-sm border border-border rounded-lg',
+      'px-3 py-2 shadow-lg',
+      'text-sm text-muted-foreground',
+      'transition-all duration-200 hover:bg-background/95'
+    )}>
+      Built by PiPilot
+    </div>
+  );
+};
+
+export default FloatingCredit;
