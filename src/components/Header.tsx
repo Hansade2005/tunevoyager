@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Music, Sun, Moon } from 'lucide-react';
+import { Search, Music, Sun, Moon, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -14,7 +15,12 @@ const Header: React.FC = () => {
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
+      setIsSearchOpen(false); // Close dropdown after search
     }
+  };
+
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
   };
 
   const toggleTheme = () => {
@@ -28,12 +34,12 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <img src="/logo.svg" alt="Music Discovery Logo" className="h-8 w-8" />
-            <span className="text-xl font-bold text-foreground">Music Discovery</span>
+            <span className="hidden sm:block text-xl font-bold text-foreground">Music Discovery</span>
           </Link>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-md mx-8">
-            <div className="relative">
+          {/* Desktop Search Bar */}
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-8">
+            <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
@@ -48,6 +54,18 @@ const Header: React.FC = () => {
               />
             </div>
           </form>
+
+          {/* Mobile Search Toggle */}
+          <button
+            onClick={toggleSearch}
+            className={cn(
+              'md:hidden p-2 rounded-full hover:bg-accent transition-colors',
+              'focus:outline-none focus:ring-2 focus:ring-primary'
+            )}
+            aria-label="Toggle search"
+          >
+            {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+          </button>
 
           {/* Theme Toggle */}
           <button
@@ -65,6 +83,29 @@ const Header: React.FC = () => {
             )}
           </button>
         </div>
+
+        {/* Mobile Search Dropdown */}
+        {isSearchOpen && (
+          <div className="md:hidden pb-4">
+            <form onSubmit={handleSearch} className="flex">
+              <div className="relative w-full max-w-md mx-auto">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search for music..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={cn(
+                    'w-full pl-10 pr-4 py-2 rounded-full border border-input bg-background',
+                    'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+                    'placeholder:text-muted-foreground'
+                  )}
+                  autoFocus
+                />
+              </div>
+            </form>
+          </div>
+        )}
       </div>
     </header>
   );
