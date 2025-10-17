@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, Heart, HeartOff } from 'lucide-react';
+import { Play, Pause, Heart, HeartOff, Download } from 'lucide-react';
 import { useMusicPlayer } from '@/context/MusicPlayerContext';
 import { Track } from '@/lib/jamendo';
 import { cn } from '@/lib/utils';
@@ -39,6 +39,16 @@ const SongCard: React.FC<SongCardProps> = ({ track, className }) => {
     } else {
       addToFavorites(track);
     }
+  };
+
+  const handleDownloadClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const link = document.createElement('a');
+    link.href = track.audio;
+    link.download = `${track.name} - ${track.artist_name}.mp3`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const formatDuration = (seconds: number) => {
@@ -105,11 +115,20 @@ const SongCard: React.FC<SongCardProps> = ({ track, className }) => {
         </p>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{formatDuration(track.duration)}</span>
-          {track.album_name && (
-            <span className="truncate ml-2" title={track.album_name}>
-              {track.album_name}
-            </span>
-          )}
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={handleDownloadClick}
+              className="p-1 hover:bg-accent rounded transition-colors opacity-0 group-hover:opacity-100"
+              title="Download track"
+            >
+              <Download className="h-3 w-3" />
+            </button>
+            {track.album_name && (
+              <span className="truncate ml-2" title={track.album_name}>
+                {track.album_name}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

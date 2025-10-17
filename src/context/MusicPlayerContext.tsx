@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useRef, useEffect, useCallback, ReactNode } from 'react';
 import { Track } from '@/lib/jamendo';
 
 interface MusicPlayerContextType {
@@ -9,12 +9,16 @@ interface MusicPlayerContextType {
   duration: number;
   playlist: Track[];
   currentIndex: number;
+  isShuffle: boolean;
+  isRepeat: boolean;
   playTrack: (track: Track, playlist?: Track[]) => void;
   togglePlay: () => void;
   setVolume: (volume: number) => void;
   seekTo: (time: number) => void;
   nextTrack: () => void;
   previousTrack: () => void;
+  toggleShuffle: () => void;
+  toggleRepeat: () => void;
   addToFavorites: (track: Track) => void;
   removeFromFavorites: (track: Track) => void;
   isFavorite: (track: Track) => boolean;
@@ -42,6 +46,8 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
   const [duration, setDuration] = useState(0);
   const [playlist, setPlaylist] = useState<Track[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
   const [favorites, setFavorites] = useState<Track[]>([]);
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -70,7 +76,15 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
 
     const handleLoadedMetadata = () => setDuration(audio.duration);
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const handleEnded = () => nextTrack();
+    const handleEnded = () => {
+      if (isRepeat && currentTrack) {
+        // Restart current track
+        audio.currentTime = 0;
+        audio.play().catch(console.error);
+      } else {
+        nextTrack();
+      }
+    };
 
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('timeupdate', handleTimeUpdate);
@@ -81,7 +95,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, []);
+  }, [isRepeat, currentTrack]);
 
   // Update volume
   useEffect(() => {
@@ -127,7 +141,15 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
   const nextTrack = () => {
     if (playlist.length === 0) return;
 
-    const nextIndex = (currentIndex + 1) % playlist.length;
+    let nextIndex;
+    if (isShuffle) {
+      // Random track, but not the current one
+      do {
+        nextIndex = Math.floor(Math.random() * playlist.length);
+      } while (nextIndex === currentIndex && playlist.length > 1);
+    } else {
+      nextIndex = (currentIndex + 1) % playlist.length;
+    }
     setCurrentIndex(nextIndex);
     playTrack(playlist[nextIndex], playlist);
   };
@@ -135,7 +157,15 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
   const previousTrack = () => {
     if (playlist.length === 0) return;
 
-    const prevIndex = currentIndex === 0 ? playlist.length - 1 : currentIndex - 1;
+    let prevIndex;
+    if (isShuffle) {
+      // In shuffle mode, previous just goes to a random track
+      do {
+        prevIndex = Math.floor(Math.random() * playlist.length);
+      } while (prevIndex === currentIndex && playlist.length > 1);
+    } else {
+      prevIndex = currentIndex === 0 ? playlist.length - 1 : currentIndex - 1;
+    }
     setCurrentIndex(prevIndex);
     playTrack(playlist[prevIndex], playlist);
   };
@@ -155,6 +185,14 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
     return favorites.some(t => t.id === track.id);
   };
 
+  const toggleShuffle = () => {
+    setIsShuffle(!isShuffle);
+  };
+
+  const toggleRepeat = () => {
+    setIsRepeat(!isRepeat);
+  };
+
   const value: MusicPlayerContextType = {
     currentTrack,
     isPlaying,
@@ -163,12 +201,16 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
     duration,
     playlist,
     currentIndex,
+    isShuffle,
+    isRepeat,
     playTrack,
     togglePlay,
     setVolume,
     seekTo,
     nextTrack,
     previousTrack,
+    toggleShuffle,
+    toggleRepeat,
     addToFavorites,
     removeFromFavorites,
     isFavorite,

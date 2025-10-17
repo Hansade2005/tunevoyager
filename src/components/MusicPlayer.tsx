@@ -21,11 +21,15 @@ const MusicPlayer: React.FC = () => {
     volume,
     currentTime,
     duration,
+    isShuffle,
+    isRepeat,
     togglePlay,
     setVolume,
     seekTo,
     nextTrack,
     previousTrack,
+    toggleShuffle,
+    toggleRepeat,
     addToFavorites,
     removeFromFavorites,
     isFavorite,
@@ -143,8 +147,30 @@ const MusicPlayer: React.FC = () => {
             </div>
           </div>
 
-          {/* Volume Control */}
+          {/* Volume Control & Options */}
           <div className="flex items-center space-x-2 min-w-0 flex-1 justify-end">
+            <div className="flex items-center space-x-1">
+              <button
+                onClick={toggleShuffle}
+                className={cn(
+                  'p-1 hover:bg-accent rounded-full transition-colors',
+                  isShuffle && 'text-primary bg-accent'
+                )}
+                title="Shuffle"
+              >
+                <Shuffle className="h-4 w-4" />
+              </button>
+              <button
+                onClick={toggleRepeat}
+                className={cn(
+                  'p-1 hover:bg-accent rounded-full transition-colors',
+                  isRepeat && 'text-primary bg-accent'
+                )}
+                title="Repeat"
+              >
+                <Repeat className="h-4 w-4" />
+              </button>
+            </div>
             <button
               onClick={toggleMute}
               className="p-1 hover:bg-accent rounded-full transition-colors"
