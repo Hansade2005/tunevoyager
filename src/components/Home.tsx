@@ -1,5 +1,4 @@
-import { Track, Playlist, fetchTrendingTracks, fetchPlaylists } from '@/lib/jamendo';
-import { PlaylistCard } from './PlaylistCard';
+import { Track, fetchTrendingTracks } from '@/lib/jamendo';
 import { SongCard } from './SongCard';
 import { useEffect, useState } from 'react';
 
@@ -9,23 +8,17 @@ interface HomeProps {
   isPlaying: boolean;
   favorites: Track[];
   onToggleFavorite: (track: Track) => void;
-  onPlayPlaylist: (playlist: Playlist) => void;
 }
 
-export function Home({ onPlay, currentTrack, isPlaying, favorites, onToggleFavorite, onPlayPlaylist }: HomeProps) {
+export function Home({ onPlay, currentTrack, isPlaying, favorites, onToggleFavorite }: HomeProps) {
   const [trendingTracks, setTrendingTracks] = useState<Track[]>([]);
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      const [tracks, playlistData] = await Promise.all([
-        fetchTrendingTracks(),
-        fetchPlaylists(),
-      ]);
+      const tracks = await fetchTrendingTracks();
       setTrendingTracks(tracks);
-      setPlaylists(playlistData);
       setLoading(false);
     };
     loadData();
@@ -57,18 +50,7 @@ export function Home({ onPlay, currentTrack, isPlaying, favorites, onToggleFavor
         </div>
       </section>
 
-      <section>
-        <h2 className="text-2xl font-bold text-white mb-4">🎶 Featured Playlists</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {playlists.map((playlist) => (
-            <PlaylistCard
-              key={playlist.id}
-              playlist={playlist}
-              onPlayPlaylist={onPlayPlaylist}
-            />
-          ))}
-        </div>
-      </section>
+
     </div>
   );
 }

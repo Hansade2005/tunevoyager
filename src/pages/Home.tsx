@@ -1,15 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import SongCard from '@/components/SongCard';
-import PlaylistCard from '@/components/PlaylistCard';
-import { fetchTrendingTracks, fetchPlaylists, fetchPlaylistTracks } from '@/lib/jamendo';
+import { fetchTrendingTracks } from '@/lib/jamendo';
 import { useMusicPlayer } from '@/context/MusicPlayerContext';
 import { Loader2 } from 'lucide-react';
 
 const Home: React.FC = () => {
   const [trendingTracks, setTrendingTracks] = useState<any[]>([]);
-  const [playlists, setPlaylists] = useState<any[]>([]);
   const [loadingTracks, setLoadingTracks] = useState(true);
-  const [loadingPlaylists, setLoadingPlaylists] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
@@ -30,29 +27,9 @@ const Home: React.FC = () => {
     }
   }, [offset]);
 
-  const loadPlaylists = useCallback(async () => {
-    try {
-      const playlistData = await fetchPlaylists(10);
-      const playlistsWithTracks = await Promise.all(
-        playlistData.map(async (playlist: any) => {
-          try {
-            const tracks = await fetchPlaylistTracks(playlist.id, 1);
-            return { ...playlist, firstTrack: tracks[0] };
-          } catch {
-            return playlist;
-          }
-        })
-      );
-      setPlaylists(playlistsWithTracks);
-    } catch (error) {
-      console.error('Error loading playlists:', error);
-    } finally {
-      setLoadingPlaylists(false);
-    }
-  }, []);
+
 
   useEffect(() => {
-    loadPlaylists();
     loadTrendingTracks(true).finally(() => setLoadingTracks(false));
   }, []);
 
@@ -75,22 +52,6 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Featured Playlists */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-foreground">Featured Playlists</h2>
-          {loadingPlaylists ? (
-            <div className="flex justify-center">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {playlists.map((playlist) => (
-                <PlaylistCard key={playlist.id} playlist={playlist} />
-              ))}
-            </div>
-          )}
-        </section>
-
         {/* Trending Tracks */}
         <section>
           <h2 className="text-3xl font-bold mb-6 text-foreground">Trending Tracks</h2>
