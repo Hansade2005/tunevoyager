@@ -27,8 +27,8 @@ const Header: React.FC = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <Music className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold text-foreground">Jamendo</span>
+            <img src="/logo.svg" alt="Music Discovery Logo" className="h-8 w-8" />
+            <span className="text-xl font-bold text-foreground">Music Discovery</span>
           </Link>
 
           {/* Search Bar */}
