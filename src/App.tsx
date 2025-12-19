@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Home from '@/pages/Home';
 import Search from '@/pages/Search';
+import TrackDetail from '@/pages/TrackDetail';
 import MusicPlayer from '@/components/MusicPlayer';
 import FloatingCredit from '@/components/FloatingCredit';
 import { Toaster } from '@/components/ui/sonner';
