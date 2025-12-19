@@ -53,6 +53,11 @@ const SongCard: React.FC<SongCardProps> = ({ track, className }) => {
     document.body.removeChild(link);
   };
 
+  const handleViewDetailsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/track/${track.id}`);
+  };
+
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
