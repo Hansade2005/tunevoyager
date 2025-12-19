@@ -11,6 +11,7 @@ interface SongCardProps {
 }
 
 const SongCard: React.FC<SongCardProps> = ({ track, className }) => {
+  const navigate = useNavigate();
   const {
     currentTrack,
     isPlaying,
