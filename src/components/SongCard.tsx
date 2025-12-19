@@ -1,5 +1,6 @@
 import React from 'react';
-import { Play, Pause, Heart, HeartOff, Download } from 'lucide-react';
+import { Play, Pause, Heart, HeartOff, Download, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useMusicPlayer } from '@/context/MusicPlayerContext';
 import { Track } from '@/lib/jamendo';
 import { cn } from '@/lib/utils';
