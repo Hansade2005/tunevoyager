@@ -89,3 +89,9 @@ export const searchTracks = async (query: string, limit: number = 50): Promise<T
   const url = `https://api.jamendo.com/v3.0/tracks/?client_id=${JAMENDO_CLIENT_ID}&format=json&limit=${limit}&namesearch=${encodeURIComponent(query)}&include=stats`;
   return fetchWithFallbackImage(url, query);
 };
+
+export const fetchTrackById = async (id: string): Promise<Track | null> => {
+  const url = `https://api.jamendo.com/v3.0/tracks/?client_id=${JAMENDO_CLIENT_ID}&format=json&id=${id}`;
+  const data = await fetchWithFallbackImage(url, 'track');
+  return data.length > 0 ? data[0] : null;
+};
