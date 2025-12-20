@@ -35,4 +35,3 @@ jobs:
       run: |
         echo "Running build..."
         npm run build
->>>>>> REPLACE
