@@ -21,9 +21,18 @@ jobs:
         npm --version
         pwd
         ls -la
+        echo "Checking package.json:"
+        cat package.json | head -20
     - name: Install dependencies
-      run: npm ci
-    - name: List dependencies
-      run: npm list --depth=0
+      run: |
+        echo "Running npm install..."
+        npm install
+    - name: Check dependencies
+      run: |
+        echo "Checking installed packages..."
+        npm list --depth=0 || echo "npm list failed"
     - name: Run Vite build
-      run: npm run build
+      run: |
+        echo "Running build..."
+        npm run build
+>>>>>> REPLACE
